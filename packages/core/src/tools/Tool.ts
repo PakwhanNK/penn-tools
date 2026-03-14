@@ -60,6 +60,8 @@ export interface ToolManifest {
   image: string;
   /** GitHub usernames or display names of the people who built this tool. */
   contributors: string[];
+  /** Student, faculty or staff mentor for this tool, if any. */
+  mentor?: string;
 }
 
 // ── Base class ────────────────────────────────────────────────────────────────
