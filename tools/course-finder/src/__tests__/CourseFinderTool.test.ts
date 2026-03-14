@@ -49,6 +49,13 @@ const stubRepo = {
 
 const stubContext: ToolContext = {
   userId: "test-user-id",
+  currentUser: {
+    id: "test-user-id",
+    type: "authenticated",
+    createdAt: new Date(),
+    name: "Test User",
+    pennId: "testuser",
+  },
   db: {
     chats: stubRepo as any,
     messages: stubRepo as any,
