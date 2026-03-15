@@ -1,6 +1,6 @@
 import "server-only";
 import { cookies } from "next/headers";
-import { identityService } from "./container.js";
+import { identityService } from "./container";
 import { ANONYMOUS_USER_COOKIE } from "@penntools/core/identity";
 import type { UserId } from "@penntools/core/types";
 
