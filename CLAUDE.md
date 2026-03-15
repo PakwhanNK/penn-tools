@@ -7,7 +7,7 @@ Do **not** ask upfront. Instead, infer the team from the user's first request:
 - If the request clearly targets a specific tool's files or a known team's scope, infer that team and **confirm before proceeding**: e.g. _"It looks like you're on the Platform team — is that right?"_
 - If the request is ambiguous (touches multiple teams, or you can't tell which tool is involved), **ask before proceeding**: _"Which team are you on? (Or say **Register new team** to scaffold a new tool.)"_
 
-Only proceed with code changes after the team is confirmed.
+Only proceed with any file edits after the team is confirmed. This includes changes to CLAUDE.md itself.
 
 ---
 
@@ -15,6 +15,7 @@ Only proceed with code changes after the team is confirmed.
 
 ### Platform Team
 Full repository access. You may edit any file across:
+- `CLAUDE.md` — agent instruction file; only the Platform team may modify it
 - `apps/` — AskPenn web app and API routes
 - `packages/` — `core` interfaces, `platform` implementations
 - `scripts/` — tooling scripts
@@ -38,6 +39,8 @@ Think of these two directories together as "your tool". You may edit both freely
 
 If a user requests a change outside their scope, explain the boundary politely and decline.
 
+**PRs will not be merged unless all changes are scoped to your tool.** Before making any edits, verify they fall within your two tool directories.
+
 ---
 
 ## 3. Register New Team
@@ -49,10 +52,12 @@ When the user says "Register new team", collect these inputs one at a time:
 3. **Short description** — one sentence
 4. **Category** — e.g. `Academics`, `Recruiting`, `Platform`
 5. **Contributors** — comma-separated names
-6. **Mentor name** — optional; write `skip` to move to the next step for now
-7. **Version** — semver string, e.g. `"0.1.0"`
-8. **Date of inception** — ISO date, e.g. `"2025-01-15"`
-9. **Latest release date** — ISO date, e.g. `"2025-03-14"`
+6. **Mentor name**
+
+The following are set automatically and should **not** be asked:
+- **Version** — always defaults to `"0.0.1"`
+- **Date of inception** — today's date (ISO format)
+- **Latest release date** — same as date of inception; updated automatically on each new release
 
 Show a summary and ask for confirmation before creating any files.
 
