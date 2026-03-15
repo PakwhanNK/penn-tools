@@ -1,12 +1,13 @@
 # PennTools — Agent Instructions
 
-## 1. Team Identification (Required at Session Start)
+## 1. Team Identification
 
-Before doing anything else in a new conversation, ask the user:
+Do **not** ask upfront. Instead, infer the team from the user's first request:
 
-> "Which team are you on? (Or say **Register new team** to scaffold a new tool.)"
+- If the request clearly targets a specific tool's files or a known team's scope, infer that team and **confirm before proceeding**: e.g. _"It looks like you're on the Platform team — is that right?"_
+- If the request is ambiguous (touches multiple teams, or you can't tell which tool is involved), **ask before proceeding**: _"Which team are you on? (Or say **Register new team** to scaffold a new tool.)"_
 
-Wait for their answer before making any code changes.
+Only proceed with code changes after the team is confirmed.
 
 ---
 
