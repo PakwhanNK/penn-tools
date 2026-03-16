@@ -1,0 +1,20 @@
+{
+  "resources": [
+    {
+      "id": "pennpay",
+      "title": "PennPay",
+      "url": "https://www.finance.upenn.edu/pennpay",
+      "description": "PennPay is Penn's official student billing and payment portal. Use it to view your account balance, make tuition and fee payments, set up a payment plan, or grant a parent access as an authorized payer.",
+      "intent": "Pay my tuition bill, view my student account balance, set up a payment plan, add a parent as an authorized payer, pay housing or dining fees",
+      "semanticTags": ["tuition", "billing", "payment", "student account", "payment plan", "authorized payer", "fees", "financial services"]
+    },
+    {
+      "id": "handshake",
+      "title": "Handshake",
+      "url": "https://upenn.joinhandshake.com",
+      "description": "Handshake is Penn's career platform where students and alumni find internships, full-time jobs, and on-campus recruiting events. Employers post positions directly and students can apply, schedule interviews through Career Services, and attend info sessions.",
+      "intent": "Find internships, search for full-time jobs, sign up for on-campus recruiting, connect with employers, attend career fairs or info sessions",
+      "semanticTags": ["internship", "jobs", "recruiting", "career", "on-campus recruiting", "OCR", "employer", "Career Services", "job search", "full-time offer"]
+    }
+  ]
+}

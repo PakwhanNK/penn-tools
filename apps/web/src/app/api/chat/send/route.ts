@@ -25,6 +25,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { resolveIdentity } from "@/lib/resolveIdentity";
 import { repositories, llm, toolRunner, logger, createLLMFromKey } from "@/lib/container";
 import { ToolNotFoundError, ToolAccessDeniedError } from "@penntools/core/tools";
+import { buildResourceContext } from "@/lib/buildResourceContext";
 
 interface SendBody {
   chatId: string;
@@ -96,9 +97,17 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     // ── Direct LLM path ───────────────────────────────────────────────────
     const history = await repositories.messages.findByChatId(chatId);
 
+    const resourceContext = buildResourceContext();
+    const systemPrompt = [
+      "You are AskPenn, a helpful assistant for University of Pennsylvania students and staff.",
+      "When answering questions, use the resource directory below to recommend relevant Penn services and tools. Always include the URL when recommending a resource. If no resource directly applies, answer from general knowledge.",
+      resourceContext,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+
     const llmResponse = await requestLlm.complete({
-      systemPrompt:
-        "You are AskPenn, a helpful assistant for University of Pennsylvania students and staff.",
+      systemPrompt,
       messages: history.map((m) => ({
         role: m.role === "tool" ? "assistant" : m.role,
         content: m.content,
