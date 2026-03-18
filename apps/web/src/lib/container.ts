@@ -53,6 +53,10 @@ import { seedResources } from "./seedResources";
 // If DATABASE_URL is not set, use in-memory repositories so the app runs
 // without a database (sufficient for prototyping). Swap to Prisma repos when
 // a real DB is configured.
+//
+// In dev mode Next.js may re-evaluate this module per route, creating separate
+// in-memory stores. Pinning them to globalThis ensures all routes share the
+// same data.
 
 const useInMemory = !process.env["DATABASE_URL"];
 
@@ -60,13 +64,29 @@ if (useInMemory) {
   console.warn("[PennTools] DATABASE_URL not set — using in-memory repositories. Data will not persist across restarts.");
 }
 
-export const repositories = useInMemory
-  ? {
+const globalForInMemory = globalThis as unknown as {
+  __penntools_inMemoryRepos?: {
+    chats: InMemoryChatRepository;
+    messages: InMemoryMessageRepository;
+    toolData: InMemoryToolDataRepository;
+    users: InMemoryUserRepository;
+  };
+};
+
+function getInMemoryRepositories() {
+  if (!globalForInMemory.__penntools_inMemoryRepos) {
+    globalForInMemory.__penntools_inMemoryRepos = {
       chats: new InMemoryChatRepository(),
       messages: new InMemoryMessageRepository(),
       toolData: new InMemoryToolDataRepository(),
       users: new InMemoryUserRepository(),
-    }
+    };
+  }
+  return globalForInMemory.__penntools_inMemoryRepos;
+}
+
+export const repositories = useInMemory
+  ? getInMemoryRepositories()
   : {
       chats: new PrismaChatRepository(prisma),
       messages: new PrismaMessageRepository(prisma),
@@ -92,8 +112,13 @@ if (!embeddingProvider) {
 
 // ── Resource repository ────────────────────────────────────────────────────
 
+const globalForInMemoryResource = globalThis as unknown as {
+  __penntools_inMemoryResourceRepo?: InMemoryResourceRepository;
+};
+
 export const resourceRepository: ResourceRepository = useInMemory
-  ? new InMemoryResourceRepository()
+  ? (globalForInMemoryResource.__penntools_inMemoryResourceRepo ??=
+      new InMemoryResourceRepository())
   : new PrismaResourceRepository(prisma);
 
 // ── LLM provider ──────────────────────────────────────────────────────────────

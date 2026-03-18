@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type { Message, Chat } from "@penntools/core/types";
 
 interface UseChatOptions {
@@ -20,6 +20,7 @@ export function useChat({ userId, chatId }: UseChatOptions): UseChatResult {
   const [messages, setMessages] = useState<Message[]>([]);
   const [chats, setChats] = useState<Chat[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const sendingRef = useRef(false);
 
   // Load chat list.
   useEffect(() => {
@@ -36,18 +37,30 @@ export function useChat({ userId, chatId }: UseChatOptions): UseChatResult {
       setMessages([]);
       return;
     }
+    // Skip fetching if a send is already in progress — the send will
+    // populate messages itself and a concurrent fetch would race and
+    // wipe the optimistic message, causing a UI flicker.
+    if (sendingRef.current) return;
+
     setIsLoading(true);
+    let cancelled = false;
     fetch(`/api/chats/${chatId}`)
       .then((r) => r.json())
-      .then((data: { messages: Message[] }) => setMessages(data.messages ?? []))
+      .then((data: { messages: Message[] }) => {
+        if (!cancelled) setMessages(data.messages ?? []);
+      })
       .catch(console.error)
-      .finally(() => setIsLoading(false));
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+    return () => { cancelled = true; };
   }, [chatId]);
 
   const sendMessage = useCallback(
     async (content: string, overrideChatId?: string) => {
       const effectiveChatId = overrideChatId ?? chatId;
       if (!effectiveChatId) return;
+      sendingRef.current = true;
       setIsLoading(true);
 
       // Optimistic user message (no id yet).
@@ -94,6 +107,7 @@ export function useChat({ userId, chatId }: UseChatOptions): UseChatResult {
         // Remove the optimistic message on error.
         setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
       } finally {
+        sendingRef.current = false;
         setIsLoading(false);
       }
     },
